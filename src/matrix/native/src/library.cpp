@@ -3,7 +3,7 @@
 
 void JNICALL Java_matrix_Matrix_transpose
         (JNIEnv *env, jclass, jobject out, jobject X, jint M, jint N) {
-    matrix out_m = matrix::from_buffer(env, out, M, N);
+    matrix out_m = matrix::from_buffer(env, out, N, M);
     matrix X_m = matrix::from_buffer(env, X, M, N);
     matrix::transpose(out_m, X_m, M, N);
 }
