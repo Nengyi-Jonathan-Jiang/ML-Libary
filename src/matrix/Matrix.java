@@ -127,8 +127,8 @@ public class Matrix {
      * Finds the matrix transpose of {@code X}
      */
     public static Matrix transpose(Matrix X) {
-        DoubleBuffer out = allocateDoubleBuffer(X.columns, X.rows);
-        transpose(out, X.data, X.columns, X.rows);
+        DoubleBuffer out = allocateDoubleBuffer(X.rows, X.columns);
+        transpose(out, X.data, X.rows, X.columns);
         return new Matrix(out, X.columns, X.rows);
     }
 
@@ -140,7 +140,7 @@ public class Matrix {
             );
         }
 
-        int outputRows = A.rows, outputColumns = B.columns, innerDimension = A.columns;
+        int outputRows = A.rows, innerDimension = A.columns, outputColumns = B.columns;
         
         DoubleBuffer out = allocateDoubleBuffer(outputRows, outputColumns);
         multiply(out, A.data, B.data, outputRows, outputColumns, innerDimension);

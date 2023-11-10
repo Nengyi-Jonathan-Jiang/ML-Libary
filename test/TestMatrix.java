@@ -67,4 +67,19 @@ public class TestMatrix {
         assertEquals(row0, m1.getRow(0));
         assertEquals(row2, m1.getRow(2));
     }
+
+    @Test
+    public void testMatrixTranspose() {
+        Matrix m1 = new Matrix(new double[][]{
+            {1, 2},
+            {3, 4},
+            {5, 6}
+        });
+        Matrix transposed = new Matrix(new double[][]{
+            {1, 3, 5},
+            {2, 4, 6}
+        });
+        assertEquals(m1, transposed.transpose());
+        assertEquals(transposed, m1.transpose());
+    }
 }
