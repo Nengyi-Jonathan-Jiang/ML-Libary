@@ -216,6 +216,14 @@ public class Matrix {
         return subtract(this, other);
     }
 
+    public double sumOfElements() {
+        double total = 0;
+        for(int i = 0; i < data.capacity(); i++) {
+            total += data.get(i);
+        }
+        return total;
+    }
+
     public static Matrix applyOperation(Matrix A, DoubleUnaryOperator operation) {
         DoubleBuffer res = allocateDoubleBuffer(A.data.capacity());
 

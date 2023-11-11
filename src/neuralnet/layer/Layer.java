@@ -2,9 +2,10 @@ package neuralnet.layer;
 
 import matrix.Matrix;
 
-public abstract class Layer {
-    protected Layer next;
+public interface Layer {
 
-    public abstract void acceptInput(Matrix input);
-    public abstract Matrix getOutput();
+    void acceptInput(Matrix input);
+    Matrix getOutputs();
+
+    Matrix updateWeightsAndBackpropagate(Matrix gradient, double learningRate);
 }
