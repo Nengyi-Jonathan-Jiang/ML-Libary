@@ -1,5 +1,10 @@
 package neuralnet.layer;
 
-public interface Layer {
-    void connect(Layer other);
+import matrix.Matrix;
+
+public abstract class Layer {
+    protected Layer next;
+
+    public abstract void acceptInput(Matrix input);
+    public abstract Matrix getOutput();
 }

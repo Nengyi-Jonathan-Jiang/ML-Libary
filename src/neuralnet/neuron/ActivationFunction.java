@@ -4,7 +4,6 @@ public interface ActivationFunction {
     double apply(double input);
     double applyDerivative(double input);
 
-
     ActivationFunction ReLU = new ActivationFunction() {
         @Override
         public double apply(double input) {
@@ -20,6 +19,7 @@ public interface ActivationFunction {
         public double apply(double input) {
             return 1 / (1 + Math.exp(-input));
         }
+
         @Override
         public double applyDerivative(double input) {
             double s = apply(input);
