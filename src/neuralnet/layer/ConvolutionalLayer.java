@@ -2,7 +2,7 @@ package neuralnet.layer;
 
 import matrix.Matrix;
 
-public class ConvolutionalLayer implements Layer {
+public class ConvolutionalLayer extends Layer {
     @Override
     public void acceptInput(Matrix input) {
 
@@ -19,7 +19,7 @@ public class ConvolutionalLayer implements Layer {
     }
 
     @Override
-    public BackpropogationResult backpropagate(Matrix gradient) {
+    public Matrix backpropagate(Matrix gradient_wrt_output, Matrix gradient_wrt_weights_accumulator) {
         return null;
     }
 }

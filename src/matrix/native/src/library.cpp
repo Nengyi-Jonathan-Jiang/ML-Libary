@@ -53,3 +53,11 @@ void JNICALL Java_matrix_Matrix_subtract
     const matrix &B_m = matrix::from_buffer(env, B, M, N);
     matrix::subtract(out_m, A_m, B_m, M, N);
 }
+
+void JNICALL Java_matrix_Matrix_multiplyAndAdd
+        (JNIEnv *env, jclass, jobject out, jobject A, jobject B, jint M, jint N, jint K) {
+    const matrix &out_m = matrix::from_buffer(env, out, M, N);
+    const matrix &A_m = matrix::from_buffer(env, A, M, K);
+    const matrix &B_m = matrix::from_buffer(env, B, K, N);
+    matrix::multiplyAndAdd(out_m, A_m, B_m, M, N, K);
+}

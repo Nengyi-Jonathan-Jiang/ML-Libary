@@ -1,5 +1,6 @@
 package basicneuron;
 
+import chart.LineChart;
 import neuralnet.neuron.ActivationFunction;
 import neuralnet.neuron.Neuron;
 import neuralnet.util.ArrayUtil;
@@ -20,6 +21,8 @@ public class Example1PredictGoalsScored {
         neuron.getWeights()[0] = 1;
         neuron.getWeights()[1] = 1;
         neuron.getWeights()[2] = 1;
+
+        LineChart chart = new LineChart();
 
         for (int i = 0; i < 1000; i++) {
             double[] gradient = new double[3];
@@ -49,6 +52,8 @@ public class Example1PredictGoalsScored {
                 neuron.getWeights()[0], neuron.getWeights()[1], neuron.getWeights()[2],
                 avgLoss
             );
+
+            chart.addPoint(i, avgLoss, "Normal");
 
             neuron.frobnicateWeights(tweaks);
         }

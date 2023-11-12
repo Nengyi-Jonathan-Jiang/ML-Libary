@@ -1,4 +1,6 @@
+#include <cstring>
 #include "matrix.h"
+
 
 void matrix::transpose(const matrix &out, const matrix &X, int M, int N) {
     for(int i = 0; i < M; i++)
@@ -6,11 +8,16 @@ void matrix::transpose(const matrix &out, const matrix &X, int M, int N) {
             out(j, i) = X(i, j);
 }
 
-void matrix::multiply(const matrix &out, const matrix &A, const matrix &B, int M, int N, int K) {
+void matrix::multiplyAndAdd(const matrix &out, const matrix &A, const matrix &B, int M, int N, int K) {
     for(int i = 0; i < M; i++)
         for(int k = 0; k < K; k++)
             for(int j = 0; j < N; j++)
                 out(i, j) += A(i, k) * B(k, j);
+}
+
+void matrix::multiply(const matrix &out, const matrix &A, const matrix &B, int M, int N, int K) {
+    memset(out.data, 0, M * N * 8);
+    multiplyAndAdd(out, A, B, M, N, K);
 }
 
 void matrix::multiply(const matrix &out, const matrix &A, const matrix &B, int M, int N) {

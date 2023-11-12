@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.26)
 project(native)
 
 set(CMAKE_CXX_STANDARD 23)
+#set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # Add all source files to build
 file(GLOB JEVM_SRC "src/*.cpp" "src/*.h")

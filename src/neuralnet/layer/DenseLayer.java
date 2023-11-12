@@ -3,9 +3,10 @@ package neuralnet.layer;
 import matrix.Matrix;
 import neuralnet.neuron.ActivationFunction;
 
-public class DenseLayer implements Layer {
+public class DenseLayer extends Layer {
     private final int numInputNodes;
     private final int numOutputNodes;
+
     private final ActivationFunction activationFunction;
     /** <1, numInputNodes> */
     public Matrix inputs;
@@ -13,15 +14,19 @@ public class DenseLayer implements Layer {
     public Matrix weightedSums;
     /** <1, numOutputNodes> */
     public Matrix outputs;
-    /** &lt;numInputNodes, numOutputNodes&gt; */
-    public Matrix weights;
+
+    /** <1, numOutputNodes> */
+    private Matrix gradient_wrt_weightedSums;
+    /** <1, numInputNodes> */
+    private Matrix gradient_wrt_inputs;
+
 
     public DenseLayer(int numInputNodes, int numOutputNodes, ActivationFunction activationFunction) {
         this(
             numInputNodes,
             numOutputNodes,
             activationFunction,
-            Matrix.randomGaussian(numInputNodes, numOutputNodes).times(1 / Math.sqrt(numInputNodes))
+            Matrix.randomUniform(numInputNodes, numOutputNodes).times(1 / Math.sqrt(numInputNodes))
         );
     }
 
@@ -30,7 +35,14 @@ public class DenseLayer implements Layer {
         this.numOutputNodes = numOutputNodes;
         this.activationFunction = activationFunction;
 
+        this.inputs = Matrix.create(1, numInputNodes);
+        this.weightedSums = Matrix.create(1, numOutputNodes);
+        this.outputs = Matrix.create(1, numOutputNodes);
+
         this.weights = weights;
+
+        this.gradient_wrt_weightedSums = Matrix.create(1, numOutputNodes);
+        this.gradient_wrt_inputs = Matrix.create(1, numInputNodes);
     }
 
     /**
@@ -39,8 +51,8 @@ public class DenseLayer implements Layer {
     @Override
     public void acceptInput(Matrix input) {
         this.inputs = input;
-        this.weightedSums = input.times(weights);
-        this.outputs = Matrix.applyOperation(weightedSums, activationFunction::apply);
+        Matrix.multiply(input, weights, this.weightedSums);
+        Matrix.applyOperation(weightedSums, activationFunction::apply, this.outputs);
     }
 
     @Override
@@ -54,22 +66,22 @@ public class DenseLayer implements Layer {
     }
 
     /**
-     * @param gradient_wrt_outputs A row vector with size = numOutputs
-     * @return A row vector with size = numInputs
+     * @param gradient_wrt_output              A row vector with size = numOutputs
+     * @param gradient_wrt_weights_accumulator
+     * @return
      */
     @Override
-    public BackpropogationResult backpropagate(Matrix gradient_wrt_outputs) {
-        // <1, outputNodes>
-        Matrix gradient_wrt_weightedSums =
-                Matrix.applyOperation(weightedSums, activationFunction::applyDerivative)
-                .times_elementwise(gradient_wrt_outputs);
+    public Matrix backpropagate(Matrix gradient_wrt_output, Matrix gradient_wrt_weights_accumulator) {
+        Matrix.applyOperation(weightedSums, activationFunction::applyDerivative, gradient_wrt_weightedSums);
+        Matrix.multiply_elementWise(gradient_wrt_weightedSums, gradient_wrt_output, gradient_wrt_weightedSums);
 
-        // <1, outputNodes> x <outputNodes, inputNodes> = <1, inputNodes>
-        Matrix gradient_wrt_inputs = gradient_wrt_weightedSums.times(weights.transpose());
+        gradient_wrt_inputs = gradient_wrt_inputs.transpose();
+        Matrix.multiply(weights, gradient_wrt_weightedSums.transpose(), gradient_wrt_inputs);
+        gradient_wrt_inputs = gradient_wrt_inputs.transpose();
 
-        // <outputNodes, 1> x <1, inputNodes> = <outputNodes, inputNodes>
-        Matrix gradient_wrt_weights = gradient_wrt_weightedSums.transpose().times(inputs).transpose();
+        Matrix.addProductTo(inputs.transpose(), gradient_wrt_weightedSums, gradient_wrt_weights_accumulator);
 
-        return new BackpropogationResult(gradient_wrt_inputs, gradient_wrt_weights);
+//        new BackpropogationResult(gradient_wrt_inputs.copy(), gradient_wrt_weights.copy());
+        return gradient_wrt_inputs;
     }
 }

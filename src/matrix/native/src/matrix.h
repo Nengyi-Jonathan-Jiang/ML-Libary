@@ -33,4 +33,6 @@ struct matrix {
     static void add(const matrix& out, const matrix& X, double c, int M, int N);
 
     static void subtract(const matrix& out, const matrix& A, const matrix& B, int M, int N);
+
+    static void multiplyAndAdd(const matrix &out, const matrix &A, const matrix &B, int M, int N, int K);
 };

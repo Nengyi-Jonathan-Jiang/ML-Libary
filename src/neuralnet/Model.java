@@ -7,8 +7,6 @@ import neuralnet.neuron.LossFunction;
 import java.util.ArrayList;
 import java.util.List;
 
-import static neuralnet.layer.Layer.BackpropogationResult;
-
 public class Model {
     private final List<Layer> layers = new ArrayList<>();
     private final LossFunction lossFunction;
@@ -39,7 +37,14 @@ public class Model {
         if(numDataPoints == 0) return Double.NaN;
 
         Matrix[] totalGradient = new Matrix[getNumLayers()];
+        Matrix original_backprop_gradient = Matrix.create(1, data[0].output.columns());
+
+        for(int i = 0; i < getNumLayers(); i++) {
+            totalGradient[i] = Matrix.create(layers.get(i).getWeights().rows(), layers.get(i).getWeights().columns());
+        }
         double totalLoss = 0;
+
+//        System.out.println("New batch================");
 
         for(DataPoint dataPoint : data) {
 
@@ -55,19 +60,9 @@ public class Model {
 
             totalLoss += loss;
 
-            // Backpropagate
-            Matrix backpropagation_gradient = lossFunction.applyGradient(predicted, dataPoint.output);
+            Matrix backpropagation_gradient = lossFunction.applyGradient(predicted, dataPoint.output, original_backprop_gradient);
             for(int i = getNumLayers() - 1; i >= 0; i--) {
-                BackpropogationResult backpropogationResult = layers.get(i).backpropagate(backpropagation_gradient);
-                backpropagation_gradient = backpropogationResult.gradient_wrt_inputs();
-                Matrix weights_gradient = backpropogationResult.gradient_wrt_weights();
-
-                if(totalGradient[i] == null) {
-                    totalGradient[i] = weights_gradient;
-                }
-                else {
-                    totalGradient[i] = totalGradient[i].plus(weights_gradient);
-                }
+                backpropagation_gradient = layers.get(i).backpropagate(backpropagation_gradient, totalGradient[i]);
             }
         }
 

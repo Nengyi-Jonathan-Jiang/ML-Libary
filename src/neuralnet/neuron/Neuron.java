@@ -1,12 +1,11 @@
 package neuralnet.neuron;
 
 import neuralnet.util.ArrayUtil;
+import neuralnet.util.MathUtil;
 
 import java.util.Random;
 
 public class Neuron {
-    private static final Random random = new Random();
-
     private final int numInputs;
     private double weightedSumOfInputs;
     private double output;
@@ -24,7 +23,7 @@ public class Neuron {
         weights = new double[numInputs];
         this.activationFunction = activationFunction;
         for(int i = 0; i < numInputs; i++) {
-            weights[i] = random.nextGaussian() / Math.sqrt(numInputs);
+            weights[i] = MathUtil.randUniform() / Math.sqrt(numInputs);
         }
 
         // Initialize all result arrays

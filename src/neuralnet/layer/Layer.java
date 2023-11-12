@@ -2,14 +2,19 @@ package neuralnet.layer;
 
 import matrix.Matrix;
 
-public interface Layer {
+public abstract class Layer {
+    protected Matrix weights;
 
-    void acceptInput(Matrix input);
-    Matrix getOutputs();
+    public abstract void acceptInput(Matrix input);
+    public abstract Matrix getOutputs();
 
-    void updateWeights(Matrix amount);
+    public abstract void updateWeights(Matrix amount);
 
-    record BackpropogationResult(Matrix gradient_wrt_inputs, Matrix gradient_wrt_weights){}
+    public static record BackpropogationResult(Matrix gradient_wrt_inputs, Matrix gradient_wrt_weights){}
 
-    BackpropogationResult backpropagate(Matrix gradient);
+    public abstract Matrix backpropagate(Matrix gradient_wrt_output, Matrix gradient_wrt_weights_accumulator);
+
+    public Matrix getWeights() {
+        return weights;
+    }
 }

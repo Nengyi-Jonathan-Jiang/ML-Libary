@@ -2,8 +2,8 @@
 #include <jni.h>
 /* Header for class matrix_Matrix */
 
-#ifndef _Included_matrix_Matrix
-#define _Included_matrix_Matrix
+#ifndef _LIBRARY_H
+#define _LIBRARY_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,6 +21,14 @@ JNIEXPORT void JNICALL Java_matrix_Matrix_transpose
  * Signature: (Ljava/nio/DoubleBuffer;Ljava/nio/DoubleBuffer;Ljava/nio/DoubleBuffer;III)V
  */
 JNIEXPORT void JNICALL Java_matrix_Matrix_multiply__Ljava_nio_DoubleBuffer_2Ljava_nio_DoubleBuffer_2Ljava_nio_DoubleBuffer_2III
+        (JNIEnv *, jclass, jobject, jobject, jobject, jint, jint, jint);
+
+/*
+ * Class:     matrix_Matrix
+ * Method:    multiplyAndAdd
+ * Signature: (Ljava/nio/DoubleBuffer;Ljava/nio/DoubleBuffer;Ljava/nio/DoubleBuffer;III)V
+ */
+JNIEXPORT void JNICALL Java_matrix_Matrix_multiplyAndAdd
         (JNIEnv *, jclass, jobject, jobject, jobject, jint, jint, jint);
 
 /*

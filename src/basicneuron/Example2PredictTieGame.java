@@ -1,5 +1,6 @@
 package basicneuron;
 
+import chart.LineChart;
 import neuralnet.neuron.ActivationFunction;
 import neuralnet.neuron.Neuron;
 import neuralnet.util.ArrayUtil;
@@ -27,6 +28,8 @@ public class Example2PredictTieGame {
                n21 = new Neuron(3, ActivationFunction.Sigmoid),
                n22 = new Neuron(3, ActivationFunction.Sigmoid);
 
+        LineChart c = new LineChart();
+
         for (int i = 0; i < 1000; i++) {
             double[] totalGradient21 = new double[3];
             double[] totalGradient11 = new double[3];
@@ -48,9 +51,9 @@ public class Example2PredictTieGame {
 
                 double predicted = n21.getOutput();
 
-                double loss = -expected_team_score_high * Math.log(predicted) + (1 - expected_team_score_high) * Math.log(1 - predicted);
+                double loss = expected_team_score_high == 0 ? -Math.log(1 - predicted) : -Math.log(predicted);
                 totalLoss += loss;
-                double loss_derivative = (expected_team_score_high == 0 ? -1 / predicted : 1 / (1 - predicted));
+                double loss_derivative = (expected_team_score_high == 0 ? 1 / (1 - predicted) : -1 / predicted);
 
                 // These gradients need only be computed once per training cycle
                 double[] d_output_weights_n21 = n21.getDerivative_OutputWRTWeights();
@@ -88,7 +91,7 @@ public class Example2PredictTieGame {
 
             double avg_loss_iteration = totalLoss / BATCH_SIZE;
 
-            System.out.printf("Loss = %s%n".formatted(avg_loss_iteration));
+            c.addPoint(i, avg_loss_iteration, "Normal");
         }
     }
 }

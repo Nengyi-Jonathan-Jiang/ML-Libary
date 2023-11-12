@@ -1,12 +1,11 @@
 package basicneuron;
 
+import chart.LineChart;
 import matrix.Matrix;
 import neuralnet.Model;
 import neuralnet.layer.DenseLayer;
 import neuralnet.neuron.ActivationFunction;
 import neuralnet.neuron.LossFunction;
-import neuralnet.neuron.Neuron;
-import neuralnet.util.ArrayUtil;
 
 public class Example2PredictTieGame_MatrixBased {
     private static final double LEARNING_RATE = 0.1;
@@ -18,7 +17,7 @@ public class Example2PredictTieGame_MatrixBased {
         double WR_eva = 0.7;
         double AG_eva = 3.5;
 
-        double __skill_difference = AG - AG_eva + 5 * (WR - WR_eva) + Math.random() - 0.5;
+        double __skill_difference = AG - AG_eva + 5 * (WR - WR_eva);// + Math.random() - 0.5;
         double didHaveTie = Math.abs(__skill_difference) <= 0.2 ? 1 : 0;
         double didTeamScoreHigh = Math.max(AG * (WR_eva + 0.5) / 2, AG_eva * (WR + 0.5) / 2) >= 4 ? 1 : 0;
 
@@ -30,13 +29,15 @@ public class Example2PredictTieGame_MatrixBased {
         model.addLayer(new DenseLayer(3, 3, ActivationFunction.ReLU));
         model.addLayer(new DenseLayer(3, 2, ActivationFunction.Sigmoid));
 
+        LineChart chart = new LineChart();
+
         for (int i = 0; i < 1000; i++) {
             Model.DataPoint[] dataPoints = new Model.DataPoint[BATCH_SIZE];
             for(int j = 0; j < BATCH_SIZE; j++) {
                 double[] testCase = __generate_test_case();
 
-                Matrix inputs = new Matrix(new double[][]{{1, testCase[0], testCase[1]}});
-                Matrix outputs = new Matrix(new double[][]{{testCase[2], testCase[3]}});
+                Matrix inputs = Matrix.fromData(new double[][]{{1, testCase[0], testCase[1]}});
+                Matrix outputs = Matrix.fromData(new double[][]{{testCase[2], testCase[3]}});
                 Model.DataPoint dataPoint = new Model.DataPoint(inputs, outputs);
                 dataPoints[j] = dataPoint;
             }
@@ -48,7 +49,7 @@ public class Example2PredictTieGame_MatrixBased {
                 model.run(dataPoint.input());
             }
 
-            System.out.println(avgLoss);
+            chart.addPoint(i, avgLoss, "Matrix");
         }
     }
 }
