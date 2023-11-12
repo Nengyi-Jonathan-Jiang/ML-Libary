@@ -17,6 +17,9 @@ public class Example1PredictGoalsScored {
 
     public static void main(String[] args) {
         Neuron neuron = new Neuron(3, ActivationFunction.ReLU);
+        neuron.getWeights()[0] = 1;
+        neuron.getWeights()[1] = 1;
+        neuron.getWeights()[2] = 1;
 
         for (int i = 0; i < 1000; i++) {
             double[] gradient = new double[3];

@@ -7,5 +7,9 @@ public interface Layer {
     void acceptInput(Matrix input);
     Matrix getOutputs();
 
-    Matrix updateWeightsAndBackpropagate(Matrix gradient, double learningRate);
+    void updateWeights(Matrix amount);
+
+    record BackpropogationResult(Matrix gradient_wrt_inputs, Matrix gradient_wrt_weights){}
+
+    BackpropogationResult backpropagate(Matrix gradient);
 }

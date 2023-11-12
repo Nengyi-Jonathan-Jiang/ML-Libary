@@ -14,7 +14,12 @@ public class ConvolutionalLayer implements Layer {
     }
 
     @Override
-    public Matrix updateWeightsAndBackpropagate(Matrix gradient, double learningRate) {
+    public void updateWeights(Matrix amount) {
+
+    }
+
+    @Override
+    public BackpropogationResult backpropagate(Matrix gradient) {
         return null;
     }
 }

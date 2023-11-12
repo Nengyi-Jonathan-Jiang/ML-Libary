@@ -17,11 +17,20 @@ public class DenseLayer implements Layer {
     public Matrix weights;
 
     public DenseLayer(int numInputNodes, int numOutputNodes, ActivationFunction activationFunction) {
+        this(
+            numInputNodes,
+            numOutputNodes,
+            activationFunction,
+            Matrix.randomGaussian(numInputNodes, numOutputNodes).times(1 / Math.sqrt(numInputNodes))
+        );
+    }
+
+    public DenseLayer(int numInputNodes, int numOutputNodes, ActivationFunction activationFunction, Matrix weights) {
         this.numInputNodes = numInputNodes;
         this.numOutputNodes = numOutputNodes;
         this.activationFunction = activationFunction;
 
-        this.weights = Matrix.randomGaussian(numInputNodes, numOutputNodes).times(1 / Math.sqrt(numInputNodes));
+        this.weights = weights;
     }
 
     /**
@@ -30,24 +39,26 @@ public class DenseLayer implements Layer {
     @Override
     public void acceptInput(Matrix input) {
         this.inputs = input;
-        this.weightedSums = input.times(weights).transpose();
+        this.weightedSums = input.times(weights);
         this.outputs = Matrix.applyOperation(weightedSums, activationFunction::apply);
     }
-
-
 
     @Override
     public Matrix getOutputs() {
         return outputs;
     }
 
+    @Override
+    public void updateWeights(Matrix amount) {
+        weights = weights.plus(amount);
+    }
+
     /**
-     * @param gradient_wrt_outputs     A row vector with size = numOutputs
-     * @param learningRate Learning rate
-     * @returns A row vector with size = numInputs
+     * @param gradient_wrt_outputs A row vector with size = numOutputs
+     * @return A row vector with size = numInputs
      */
     @Override
-    public Matrix updateWeightsAndBackpropagate(Matrix gradient_wrt_outputs, double learningRate) {
+    public BackpropogationResult backpropagate(Matrix gradient_wrt_outputs) {
         // <1, outputNodes>
         Matrix gradient_wrt_weightedSums =
                 Matrix.applyOperation(weightedSums, activationFunction::applyDerivative)
@@ -57,11 +68,8 @@ public class DenseLayer implements Layer {
         Matrix gradient_wrt_inputs = gradient_wrt_weightedSums.times(weights.transpose());
 
         // <outputNodes, 1> x <1, inputNodes> = <outputNodes, inputNodes>
-        Matrix gradient_wrt_weights = gradient_wrt_weightedSums.transpose().times(inputs);
+        Matrix gradient_wrt_weights = gradient_wrt_weightedSums.transpose().times(inputs).transpose();
 
-        // Update weights
-        weights = weights.minus(gradient_wrt_weights.times(-learningRate));
-
-        return gradient_wrt_inputs;
+        return new BackpropogationResult(gradient_wrt_inputs, gradient_wrt_weights);
     }
 }

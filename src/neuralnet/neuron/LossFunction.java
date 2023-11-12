@@ -21,7 +21,7 @@ public interface LossFunction {
         @Override
         public double apply(Matrix predicted, Matrix expected) {
             Matrix residual = predicted.minus(expected);
-            double sumSquaredResiduals = residual.times_elementwise(residual.transpose()).at(0, 0);
+            double sumSquaredResiduals = residual.times(residual.transpose()).at(0, 0);
             return sumSquaredResiduals / (2 * residual.columns);
         }
 
@@ -38,7 +38,7 @@ public interface LossFunction {
         }
 
         private double logLossDerivative(double predicted, double expected) {
-            return expected == 0 ? -1 / predicted : 1 / (1 - predicted);
+            return expected == 0 ? 1 / predicted : -1 / (1 - predicted);
         }
 
         @Override
