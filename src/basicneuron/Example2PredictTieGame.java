@@ -6,16 +6,27 @@ import neuralnet.neuron.Neuron;
 import neuralnet.util.ArrayUtil;
 
 public class Example2PredictTieGame {
-    private static final double LEARNING_RATE = 0.1, BATCH_SIZE = 100;
+    private static final double LEARNING_RATE = 0.1, BATCH_SIZE = 1000;
 
     private static double[] __generate_test_case() {
-        double WR = Math.random() * 0.6 + 0.2;
-        double AG = Math.random() * 2 + 0.5;
-        double WR_eva = 0.7;
-        double AG_eva = 3.5;
+//        double WR = Math.random() * 0.6 + 0.2;
+//        double AG = Math.random() * 2 + 0.5;
+//        double WR_eva = 0.7;
+//        double AG_eva = 3.5;
+//
+//        double __skill_difference = AG - AG_eva + 5 * (WR - WR_eva) + Math.random() - 0.5;
+//        double didHaveTie = Math.abs(__skill_difference) <= 0.2 ? 1 : 0;
+//        double didTeamScoreHigh = Math.max(AG * (WR_eva + 0.5) / 2, AG_eva * (WR + 0.5) / 2) >= 4 ? 1 : 0;
+//
+//        return new double[]{WR, AG, didHaveTie, didTeamScoreHigh};
 
-        double __skill_difference = AG - AG_eva + 5 * (WR - WR_eva) + Math.random() - 0.5;
-        double didHaveTie = Math.abs(__skill_difference) <= 0.2 ? 1 : 0;
+        double WR = Math.random() * 0.6 + 0.2;
+        double AG = Math.random() * 3.5 + 0.5;
+        double WR_eva = 0.5;
+        double AG_eva = 3;
+
+        double __skill_difference = AG - AG_eva + 2 * (WR - WR_eva);// + Math.random() - 0.5;
+        double didHaveTie = Math.abs(__skill_difference) <= 2 ? 1 : 0;
         double didTeamScoreHigh = Math.max(AG * (WR_eva + 0.5) / 2, AG_eva * (WR + 0.5) / 2) >= 4 ? 1 : 0;
 
         return new double[]{WR, AG, didHaveTie, didTeamScoreHigh};
@@ -30,7 +41,7 @@ public class Example2PredictTieGame {
 
         LineChart c = new LineChart();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             double[] totalGradient21 = new double[3];
             double[] totalGradient11 = new double[3];
             double[] totalGradient12 = new double[3];

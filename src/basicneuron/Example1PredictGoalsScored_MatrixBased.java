@@ -9,8 +9,8 @@ import neuralnet.neuron.ActivationFunction;
 import neuralnet.neuron.LossFunction;
 
 public class Example1PredictGoalsScored_MatrixBased {
-    private static final double LEARNING_RATE = 0.1;
-    private static final int BATCH_SIZE = 100;
+    private static final double LEARNING_RATE = 0.05;
+    private static final int BATCH_SIZE = 1000;
 
     private static double[] __generate_test_case() {
         double WR = Math.random() * 0.6 + 0.2;
@@ -26,7 +26,7 @@ public class Example1PredictGoalsScored_MatrixBased {
 
         LineChart chart = new LineChart();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             DataPoint[] dataPoints = new DataPoint[BATCH_SIZE];
             for(int j = 0; j < BATCH_SIZE; j++) {
                 double[] testCase = __generate_test_case();

@@ -6,7 +6,7 @@ import neuralnet.neuron.Neuron;
 import neuralnet.util.ArrayUtil;
 
 public class Example1PredictGoalsScored {
-    private static final double LEARNING_RATE = 0.1, BATCH_SIZE = 100;
+    private static final double LEARNING_RATE = 0.05, BATCH_SIZE = 1000;
 
     private static double[] __generate_test_case() {
         double WR = Math.random() * 0.6 + 0.2;
@@ -24,7 +24,7 @@ public class Example1PredictGoalsScored {
 
         LineChart chart = new LineChart();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             double[] gradient = new double[3];
             double totalLoss = 0;
             for(int j = 0; j < BATCH_SIZE; j++) {
