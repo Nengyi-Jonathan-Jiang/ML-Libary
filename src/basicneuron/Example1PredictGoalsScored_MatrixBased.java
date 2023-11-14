@@ -26,9 +26,11 @@ public class Example1PredictGoalsScored_MatrixBased {
         System.out.println(LossFunction.MeanSquaredLoss.apply(MatrixFactory.rowVector(1, 2, 3), MatrixFactory.rowVector(0, 0, 0)));
 
         Model m = new Model(LossFunction.MeanSquaredLoss, LEARNING_RATE);
-        m.addLayer(new DenseLayer(3, 1, ActivationFunction.ReLU, MatrixFactory.matrix(new double[][]{{1}, {1}, {1}})));
+        DenseLayer layer = new DenseLayer(3, 1, ActivationFunction.ReLU, MatrixFactory.matrix(new double[][]{{1}, {1}, {1}}));
+        m.addLayer(layer);
 
         LineChart chart = new LineChart();
+        LineChart weightsChart = new LineChart();
 
         for (int i = 0; i < 10000; i++) {
             DataPoint[] dataPoints = new DataPoint[BATCH_SIZE];
@@ -43,6 +45,9 @@ public class Example1PredictGoalsScored_MatrixBased {
 
             double avgLoss = m.train(dataPoints);
             chart.addPoint(i, avgLoss, "Matrix");
+            weightsChart.addPoint(i, layer.getWeights().getElementAt(0, 0), "w1");
+            weightsChart.addPoint(i, layer.getWeights().getElementAt(1, 0), "w2");
+            weightsChart.addPoint(i, layer.getWeights().getElementAt(2, 0), "w3");
         }
     }
 }
