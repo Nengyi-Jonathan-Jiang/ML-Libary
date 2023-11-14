@@ -20,9 +20,9 @@ public interface LossFunction {
     LossFunction MeanSquaredLoss = new LossFunction() {
         @Override
         public double apply(RowVector predicted, RowVector expected) {
-            Matrix residual = predicted.minus(expected);
-            double sumSquaredResiduals = residual.times(residual.transpose()).getElementAt(0, 0);
-            return sumSquaredResiduals / (2 * residual.columns());
+            RowVector residual = (RowVector) predicted.minus(expected);
+            double sumSquaredResiduals = residual.dot(residual);
+            return sumSquaredResiduals / residual.columns();
         }
 
         @Override

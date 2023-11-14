@@ -23,6 +23,8 @@ public class Example1PredictGoalsScored_MatrixBased {
     }
 
     public static void main(String[] args) {
+        System.out.println(LossFunction.MeanSquaredLoss.apply(MatrixFactory.rowVector(1, 2, 3), MatrixFactory.rowVector(0, 0, 0)));
+
         Model m = new Model(LossFunction.MeanSquaredLoss, LEARNING_RATE);
         m.addLayer(new DenseLayer(3, 1, ActivationFunction.ReLU, MatrixFactory.matrix(new double[][]{{1}, {1}, {1}})));
 
