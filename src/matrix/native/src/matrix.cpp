@@ -45,3 +45,9 @@ void matrix::subtract(const matrix &out, const matrix &A, const matrix &B, int M
         out[i] = A[i] - B[i];
 }
 
+double matrix::dot(const matrix &A, const matrix &B, int N) {
+    double res = 0;
+    for(int i = 0; i < N; i++) res += A[i] * B[i];
+    return res;
+}
+

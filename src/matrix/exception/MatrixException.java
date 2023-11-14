@@ -1,4 +1,4 @@
-package matrix;
+package matrix.exception;
 
 public class MatrixException extends RuntimeException {
     public MatrixException() { this(""); }

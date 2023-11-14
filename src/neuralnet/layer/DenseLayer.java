@@ -1,6 +1,8 @@
 package neuralnet.layer;
 
 import matrix.Matrix;
+import matrix.MatrixFactory;
+import matrix.RowVector;
 import neuralnet.neuron.ActivationFunction;
 
 public class DenseLayer extends Layer {
@@ -9,16 +11,16 @@ public class DenseLayer extends Layer {
 
     private final ActivationFunction activationFunction;
     /** <1, numInputNodes> */
-    public Matrix inputs;
+    public RowVector inputs;
     /** <1, numOutputNodes> */
-    public Matrix weightedSums;
+    public final RowVector weightedSums;
     /** <1, numOutputNodes> */
-    public Matrix outputs;
+    public RowVector outputs;
 
     /** <1, numOutputNodes> */
-    private Matrix gradient_wrt_weightedSums;
+    private final RowVector gradient_wrt_weightedSums;
     /** <1, numInputNodes> */
-    private Matrix gradient_wrt_inputs;
+    private final RowVector gradient_wrt_inputs;
 
 
     public DenseLayer(int numInputNodes, int numOutputNodes, ActivationFunction activationFunction) {
@@ -26,7 +28,7 @@ public class DenseLayer extends Layer {
             numInputNodes,
             numOutputNodes,
             activationFunction,
-            Matrix.randomUniform(numInputNodes, numOutputNodes).times(1 / Math.sqrt(numInputNodes))
+            MatrixFactory.randomUniform(numInputNodes, numOutputNodes).times(1 / Math.sqrt(numInputNodes))
         );
     }
 
@@ -35,28 +37,28 @@ public class DenseLayer extends Layer {
         this.numOutputNodes = numOutputNodes;
         this.activationFunction = activationFunction;
 
-        this.inputs = Matrix.create(1, numInputNodes);
-        this.weightedSums = Matrix.create(1, numOutputNodes);
-        this.outputs = Matrix.create(1, numOutputNodes);
+        this.inputs = MatrixFactory.rowVector(numInputNodes);
+        this.weightedSums = MatrixFactory.rowVector(numOutputNodes);
+        this.outputs = MatrixFactory.rowVector(numOutputNodes);
 
         this.weights = weights;
 
-        this.gradient_wrt_weightedSums = Matrix.create(1, numOutputNodes);
-        this.gradient_wrt_inputs = Matrix.create(1, numInputNodes);
+        this.gradient_wrt_weightedSums = MatrixFactory.rowVector(numOutputNodes);
+        this.gradient_wrt_inputs = MatrixFactory.rowVector(numInputNodes);
     }
 
     /**
      * @param input a row vector <1, rows>
      */
     @Override
-    public void acceptInput(Matrix input) {
+    public void acceptInput(RowVector input) {
         this.inputs = input;
-        Matrix.multiply(input, weights, this.weightedSums);
+        input.multiply_to(weights, weightedSums);
         Matrix.applyOperation(weightedSums, activationFunction::apply, this.outputs);
     }
 
     @Override
-    public Matrix getOutputs() {
+    public RowVector getOutputs() {
         return outputs;
     }
 
@@ -71,17 +73,14 @@ public class DenseLayer extends Layer {
      * @return
      */
     @Override
-    public Matrix backpropagate(Matrix gradient_wrt_output, Matrix gradient_wrt_weights_accumulator) {
+    public RowVector backpropagate(RowVector gradient_wrt_output, Matrix gradient_wrt_weights_accumulator) {
         Matrix.applyOperation(weightedSums, activationFunction::applyDerivative, gradient_wrt_weightedSums);
-        Matrix.multiply_elementWise(gradient_wrt_weightedSums, gradient_wrt_output, gradient_wrt_weightedSums);
+        gradient_wrt_weightedSums.multiply_elementwise_to(gradient_wrt_output, gradient_wrt_weightedSums);
 
-        gradient_wrt_inputs = gradient_wrt_inputs.transpose();
-        Matrix.multiply(weights, gradient_wrt_weightedSums.transpose(), gradient_wrt_inputs);
-        gradient_wrt_inputs = gradient_wrt_inputs.transpose();
+        weights.multiply_to(gradient_wrt_weightedSums.transpose(), gradient_wrt_inputs.transpose());
 
-        Matrix.addProductTo(inputs.transpose(), gradient_wrt_weightedSums, gradient_wrt_weights_accumulator);
+        inputs.transpose().multiply_and_add_to(gradient_wrt_weightedSums, gradient_wrt_weights_accumulator);
 
-//        new BackpropogationResult(gradient_wrt_inputs.copy(), gradient_wrt_weights.copy());
         return gradient_wrt_inputs;
     }
 }

@@ -2,6 +2,8 @@ package basicneuron;
 
 import chart.LineChart;
 import matrix.Matrix;
+import matrix.MatrixFactory;
+import matrix.RowVector;
 import neuralnet.Model;
 import neuralnet.Model.DataPoint;
 import neuralnet.layer.DenseLayer;
@@ -22,7 +24,7 @@ public class Example1PredictGoalsScored_MatrixBased {
 
     public static void main(String[] args) {
         Model m = new Model(LossFunction.MeanSquaredLoss, LEARNING_RATE);
-        m.addLayer(new DenseLayer(3, 1, ActivationFunction.ReLU, Matrix.fromData(new double[][]{{1}, {1}, {1}})));
+        m.addLayer(new DenseLayer(3, 1, ActivationFunction.ReLU, MatrixFactory.matrix(new double[][]{{1}, {1}, {1}})));
 
         LineChart chart = new LineChart();
 
@@ -31,8 +33,8 @@ public class Example1PredictGoalsScored_MatrixBased {
             for(int j = 0; j < BATCH_SIZE; j++) {
                 double[] testCase = __generate_test_case();
 
-                Matrix inputs = Matrix.fromData(new double[][]{{1, testCase[0], testCase[1]}});
-                Matrix outputs = Matrix.fromData(new double[][]{{testCase[2]}});
+                RowVector inputs = MatrixFactory.rowVector(1, testCase[0], testCase[1]);
+                RowVector outputs = MatrixFactory.rowVector(testCase[2]);
                 DataPoint dataPoint = new DataPoint(inputs, outputs);
                 dataPoints[j] = dataPoint;
             }

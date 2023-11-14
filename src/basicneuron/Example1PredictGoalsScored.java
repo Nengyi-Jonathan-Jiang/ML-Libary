@@ -11,7 +11,7 @@ public class Example1PredictGoalsScored {
     private static double[] __generate_test_case() {
         double WR = Math.random() * 0.6 + 0.2;
         double AG = Math.random() * 2 + 0.5;
-        double result = (4.2 - 5 * WR + AG * 1.2 + (Math.random() - 0.5) * 0.2);
+        double result = (4.2 - 5 * WR + AG * 1.2);
 
         return new double[]{WR, AG, result};
     }

@@ -1,6 +1,8 @@
 package neuralnet;
 
 import matrix.Matrix;
+import matrix.MatrixFactory;
+import matrix.RowVector;
 import neuralnet.layer.Layer;
 import neuralnet.neuron.LossFunction;
 
@@ -12,7 +14,7 @@ public class Model {
     private final LossFunction lossFunction;
     private final double learningRate;
 
-    public record DataPoint(Matrix input, Matrix output) {}
+    public record DataPoint(RowVector input, RowVector output) {}
 
     public Model(LossFunction lossFunction, double learningRate) {
         this.lossFunction = lossFunction;
@@ -23,7 +25,7 @@ public class Model {
         layers.add(layer);
     }
 
-    public double train(Matrix input, Matrix expected) {
+    public double train(RowVector input, RowVector expected) {
         return train(new DataPoint(input, expected));
     }
 
@@ -36,11 +38,11 @@ public class Model {
         int numDataPoints = data.length;
         if(numDataPoints == 0) return Double.NaN;
 
-        Matrix[] totalGradient = new Matrix[getNumLayers()];
-        Matrix original_backprop_gradient = Matrix.create(1, data[0].output.columns());
+        Matrix[] total_gradients_wrt_weights = new Matrix[getNumLayers()];
+        RowVector original_backpropagation_gradient = MatrixFactory.rowVector(data[0].output.columns());
 
         for(int i = 0; i < getNumLayers(); i++) {
-            totalGradient[i] = Matrix.create(layers.get(i).getWeights().rows(), layers.get(i).getWeights().columns());
+            total_gradients_wrt_weights[i] = MatrixFactory.matrix(layers.get(i).getWeights());
         }
         double totalLoss = 0;
 
@@ -49,7 +51,7 @@ public class Model {
         for(DataPoint dataPoint : data) {
 
             // Feed data point into network
-            Matrix predicted = dataPoint.input;
+            RowVector predicted = dataPoint.input;
             for(Layer l : layers) {
                 l.acceptInput(predicted);
                 predicted = l.getOutputs();
@@ -60,14 +62,14 @@ public class Model {
 
             totalLoss += loss;
 
-            Matrix backpropagation_gradient = lossFunction.applyGradient(predicted, dataPoint.output, original_backprop_gradient);
+            RowVector backpropagation_gradient = lossFunction.applyGradient(predicted, dataPoint.output, original_backpropagation_gradient);
             for(int i = getNumLayers() - 1; i >= 0; i--) {
-                backpropagation_gradient = layers.get(i).backpropagate(backpropagation_gradient, totalGradient[i]);
+                backpropagation_gradient = layers.get(i).backpropagate(backpropagation_gradient, total_gradients_wrt_weights[i]);
             }
         }
 
         for(int i = 0; i < getNumLayers(); i++) {
-            Matrix gradient = totalGradient[i].times(1. / numDataPoints);
+            Matrix gradient = total_gradients_wrt_weights[i].times(1. / numDataPoints);
             layers.get(i).updateWeights(gradient.times(-learningRate));
         }
 
@@ -78,8 +80,8 @@ public class Model {
         return layers.size();
     }
 
-    public Matrix run(Matrix input) {
-        Matrix predicted = input;
+    public RowVector run(RowVector input) {
+        RowVector predicted = input;
         for(Layer l : layers) {
             l.acceptInput(predicted);
             predicted = l.getOutputs();

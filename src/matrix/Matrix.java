@@ -1,451 +1,118 @@
 package matrix;
 
-import neuralnet.util.MathUtil;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
-import java.util.Arrays;
 import java.util.function.DoubleBinaryOperator;
-import java.util.function.DoubleSupplier;
 import java.util.function.DoubleUnaryOperator;
 
+import static matrix.MatrixBase.*;
+
 /**
- * Represents an immutable matrix class in row major order
+ * Represents a matrix class in row major order
  */
-public class Matrix {
-    /**
-     * A buffer storing the data in column major order
-     */
-    private final DoubleBuffer data;
-    /**
-     * Number of rows in the matrix
-     */
-    public final int rows;
-    /**
-     * Number of columns in the matrix
-     */
-    public final int columns;
+public sealed interface Matrix permits DegenerateMatrix, MatrixBase, Vector {
+    int rows();
+    int columns();
+    /** Total number of elements in the matrix, equal to rows() * columns() */
+    int size();
 
-    public int rows() { return rows; }
-    public int columns() { return columns; }
+    double getElementAt(int row, int column);
+    void setElementAt(int row, int column, double value);
 
-    public static Matrix create(int rows, int columns) {
-        if(rows * columns == 0)
-            throw new MatrixDimensionException("Invalid matrix dimensions: <%d, %d>".formatted(rows, columns));
+    Matrix copy();
 
-        DoubleBuffer buffer = allocateDoubleBuffer(rows, columns);
+    RowVector getRow(int row);
+    ColumnVector getColumn(int column);
 
-        return new Matrix(buffer, rows, columns);
-    }
-
-    public static Matrix fromData(double[][] data) {
-        int rows = data.length;
-        if (rows == 0) throw new MatrixDimensionException("Invalid matrix dimensions: <0 , 0>");
-
-        int columns = data[0].length;
-        if (columns == 0) throw new MatrixDimensionException("Invalid matrix dimensions: <%d, 0>".formatted(rows));
-
-        for (double[] row : data) {
-            if (row.length != columns) {
-                throw new MatrixDimensionException("Data must be a rectangular matrix");
-            }
-        }
-
-        DoubleBuffer buffer = allocateDoubleBuffer(rows, columns);
-        for (int j = 0; j < columns; j++)
-            for (int i = 0; i < rows; i++)
-                buffer.put(j + i * columns, data[i][j]);
-
-        return new Matrix(buffer, rows, columns);
-    }
-
-    public static Matrix fromBuffer(DoubleBuffer buffer, int rows, int columns) {
-        return new Matrix(buffer, rows, columns);
-    }
-
-    public static Matrix create(int rows, int columns, DoubleSupplier create) {
-        DoubleBuffer buffer = allocateDoubleBuffer(rows, columns);
-
-        for (int i = 0; i < rows * columns; i++) buffer.put(i, create.getAsDouble());
-
-        return Matrix.fromBuffer(buffer, rows, columns);
-    }
-
-
-    public static Matrix identity(int size) {
-        DoubleBuffer buffer = allocateDoubleBuffer(size, size);
-
-        for (int i = 0; i < size; i++) {
-            buffer.put(i * (size + 1), 1);
-        }
-
-        return new Matrix(buffer, size, size);
-    }
-
-    private static Matrix createMatrix(int rows, int columns, DoubleSupplier create) {
-        DoubleBuffer buffer = allocateDoubleBuffer(rows, columns);
-
-        for(int i = 0; i < rows * columns; i++) buffer.put(i, create.getAsDouble());
-
-        return new Matrix(buffer, rows, columns);
-    }
-
-    public static Matrix zero(int rows, int columns) {
-        return createMatrix(rows, columns, () -> 0);
-    }
-
-    public static Matrix one(int rows, int columns) {
-        return createMatrix(rows, columns, () -> 1);
-    }
-
-    public static Matrix randomUniform(int rows, int columns) {
-        return createMatrix(rows, columns, MathUtil::randUniform);
-    }
-
-    public static Matrix randomGaussian(int rows, int columns) {
-        return createMatrix(rows, columns, MathUtil::randGaussian);
-    }
-
-    /**
-     * Constructs a matrix from a 2d array of numbers in row-major order <br>
-     * {@code data} must be rectangular
-     */
-    public Matrix(double[][] data) {
-        int rows = data.length;
-        if (rows == 0) throw new MatrixDimensionException("Invalid matrix dimensions: <0 , 0>");
-
-        int columns = data[0].length;
-        if (columns == 0) throw new MatrixDimensionException("Invalid matrix dimensions: <0, " + columns + ">");
-
-        if (!Arrays.stream(data).allMatch(i -> i.length == columns))
-            throw new MatrixDimensionException("Data must be a rectangular matrix");
-
-        this.data = allocateDoubleBuffer(rows, columns);
-        for (int j = 0; j < columns; j++)
-            for (int i = 0; i < rows; i++)
-                this.data.put(j + i * columns, data[i][j]);
-
-        this.columns = columns;
-        this.rows = rows;
-    }
-
-    /**
-     * Constructs a matrix from raw data in column major order <br>
-     */
-    private Matrix(DoubleBuffer buf, int rows, int columns) {
-        if (rows * columns == 0)
-            throw new MatrixDimensionException("Invalid matrix dimensions: <" + rows + ", " + columns + ">");
-        if (buf.capacity() != rows * columns) throw new MatrixDimensionException("Matrix dimensions do not match data");
-        this.data = buf;
-        this.rows = rows;
-        this.columns = columns;
-    }
-
-    public double at(int row, int column) {
-        return data.get(column + row * columns);
-    }
-
-    public Matrix getRow(int row) {
-        DoubleBuffer columnData = data.slice(row * columns, columns);
-        return new Matrix(columnData, 1, columns);
-    }
-
-    /**
-     * This is a bit slower than getRow since data is stored in column major order
-     */
-    public Matrix getColumn(int column) {
-        DoubleBuffer res = allocateDoubleBuffer(rows);
-        for (int r = 0; r < rows; r++) res.put(r, at(r, column));
-        return new Matrix(res, rows, 1);
-    }
-
-    public boolean isColumnVector() {
-        return columns == 1;
-    }
-
-    public boolean isRowVector() {
-        return rows == 1;
-    }
-
-    /**
-     * Finds the matrix transpose of {@code X}
-     */
-    public static Matrix transpose(Matrix X) {
-        DoubleBuffer out = allocateDoubleBuffer(X.rows, X.columns);
-        transpose(out, X.data, X.rows, X.columns);
-        return new Matrix(out, X.columns, X.rows);
-    }
-
-    public static Matrix multiply(Matrix A, Matrix B) {
-        if(A.columns != B.rows) {
-            throw new MatrixDimensionException(
-                    "Cannot multiply matrices <%d, %d> and <%d, %d>"
-                    .formatted(A.rows, A.columns, B.rows, B.columns)
-            );
-        }
-
-        int outputRows = A.rows, innerDimension = A.columns, outputColumns = B.columns;
-        
-        DoubleBuffer out = allocateDoubleBuffer(outputRows, outputColumns);
-        multiply(out, A.data, B.data, outputRows, outputColumns, innerDimension);
-        return new Matrix(out, outputRows, outputColumns);
-    }
-
-    public static Matrix multiply(Matrix A, Matrix B, Matrix out) {
-        if(A.columns != B.rows) {
-            throw new MatrixDimensionException(
-                    "Cannot multiply matrices <%d, %d> and <%d, %d>"
-                            .formatted(A.rows, A.columns, B.rows, B.columns)
-            );
-        }
-        int outputRows = A.rows, innerDimension = A.columns, outputColumns = B.columns;
-        multiply(out.data, A.data, B.data, outputRows, outputColumns, innerDimension);
-        return out;
-    }
-
-
-    public static Matrix addProductTo(Matrix A, Matrix B, Matrix out) {
-        if(A.columns != B.rows) {
-            throw new MatrixDimensionException(
-                    "Cannot multiply matrices <%d, %d> and <%d, %d>"
-                            .formatted(A.rows, A.columns, B.rows, B.columns)
-            );
-        }
-        int outputRows = A.rows, innerDimension = A.columns, outputColumns = B.columns;
-        multiplyAndAdd(out.data, A.data, B.data, outputRows, outputColumns, innerDimension);
-        return out;
-    }
-
-    public static Matrix multiply_elementWise(Matrix A, Matrix B) {
-        checkDimensionsEqual(A, B);
-
-        int rows = A.rows, columns = A.columns;
-        DoubleBuffer out = allocateDoubleBuffer(rows, columns);
-        multiply(out, A.data, B.data, rows, columns);
-        return new Matrix(out, rows, columns);
-    }
-
-    public static Matrix multiply_elementWise(Matrix A, Matrix B, Matrix out) {
-        checkDimensionsEqual(A, B);
-        checkDimensionsEqual(A, out);
-
-        int rows = A.rows, columns = A.columns;
-        multiply(out.data, A.data, B.data, rows, columns);
-        return out;
-    }
-
-    public static Matrix multiply(Matrix X, double c) {
-        int rows = X.rows, columns = X.columns;
-        DoubleBuffer out = allocateDoubleBuffer(rows, columns);
-        multiply(out, X.data, c, rows, columns);
-        return new Matrix(out, rows, columns);
-    }
-
-    public static Matrix multiply(Matrix X, double c, Matrix out) {
-        checkDimensionsEqual(X, out);
-        int rows = X.rows, columns = X.columns;
-        multiply(out.data, X.data, c, rows, columns);
-        return out;
-    }
+    Matrix transpose();
+    Matrix transpose_to(Matrix out);
     
-    public static Matrix add(Matrix A, Matrix B) {
-        checkDimensionsEqual(A, B);
+    Matrix times(Matrix other);
+    Matrix multiply_to(Matrix other, Matrix out);
+    Matrix multiply_and_add_to(Matrix other, Matrix out);
+    Matrix times_elementwise(Matrix other);
+    Matrix multiply_elementwise_to(Matrix other, Matrix out);
+    Matrix times(double b);
+    Matrix multiply_to(double b, Matrix out);
+    Matrix plus(Matrix other);
+    Matrix sum_to(Matrix other, Matrix out);
+    Matrix plus(double b);
+    Matrix sum_to(double b, Matrix out);
+    Matrix minus(Matrix other);
+    Matrix subtract_to(Matrix other, Matrix out);
+    double sumOfElements();
 
-        int rows = A.rows, columns = A.columns;
-        DoubleBuffer out = allocateDoubleBuffer(rows, columns);
-        add(out, A.data, B.data, rows, columns);
-        return new Matrix(out, rows, columns);
+    static Matrix transpose(Matrix m) {
+        return m.transpose();
     }
 
-    public static Matrix add(Matrix X, double c) {
-        int rows = X.rows, columns = X.columns;
-        DoubleBuffer out = allocateDoubleBuffer(rows, columns);
-        add(out, X.data, c, rows, columns);
-        return new Matrix(out, rows, columns);
+    static Matrix transpose_to(Matrix m, Matrix out) {
+        return m.transpose_to(out);
     }
 
-    public static Matrix subtract(Matrix A, Matrix B) {
-        checkDimensionsEqual(A, B);
-
-        int rows = A.rows, columns = A.columns;
-        DoubleBuffer out = allocateDoubleBuffer(rows, columns);
-        subtract(out, A.data, B.data, rows, columns);
-        return new Matrix(out, rows, columns);
+    static Matrix multiply(Matrix a, Matrix b) {
+        return a.times(b);
     }
 
-    public static Matrix subtract(Matrix A, Matrix B, Matrix out) {
-        int rows = A.rows, columns = A.columns;
-        subtract(out.data, A.data, B.data, rows, columns);
-        return out;
+    static Matrix multiply_to(Matrix a, Matrix b, Matrix out) {
+        return a.multiply_to(b, out);
     }
 
-    public Matrix transpose() {
-        return transpose(this);
-    }
 
-    public Matrix times(Matrix other) {
-        return multiply(this, other);
-    }
 
-    public Matrix times_elementwise(Matrix other) {
-        return multiply_elementWise(this, other);
-    }
 
-    public Matrix times(double b) {
-        return multiply(this, b);
-    }
 
-    public Matrix plus(Matrix other) {
-        return add(this, other);
-    }
 
-    public Matrix plus(double b) {
-        return add(this, b);
-    }
 
-    public Matrix minus(Matrix other) {
-        return subtract(this, other);
-    }
 
-    public double sumOfElements() {
-        double total = 0;
-        for(int i = 0; i < data.capacity(); i++) {
-            total += data.get(i);
-        }
-        return total;
-    }
-
-    public static Matrix applyOperation(Matrix A, DoubleUnaryOperator operation) {
-        DoubleBuffer res = allocateDoubleBuffer(A.data.capacity());
+    static Matrix applyOperation(Matrix A, DoubleUnaryOperator operation) {
+        DoubleBuffer res = allocateDoubleBuffer(getBufferOf(A).capacity());
 
         for (int i = 0; i < res.capacity(); i++)
-            res.put(i, operation.applyAsDouble(A.data.get(i)));
+            res.put(i, operation.applyAsDouble(getBufferOf(A).get(i)));
 
-        return new Matrix(res, A.rows, A.columns);
+        return MatrixFactory.matrix(res, A.rows(), A.columns());
     }
-    public static Matrix applyOperation(Matrix A, DoubleUnaryOperator operation, Matrix out) {
-        for (int i = 0; i < A.data.capacity(); i++)
-            out.data.put(i, operation.applyAsDouble(A.data.get(i)));
+
+    static Matrix applyOperation(Matrix A, DoubleUnaryOperator operation, Matrix out) {
+        assertDimensionsEqual(A, out);
+
+        int totalElements = A.size();
+
+        for (int i = 0; i < totalElements; i++)
+            getBufferOf(A).put(i, operation.applyAsDouble(getBufferOf(A).get(i)));
+
         return out;
     }
 
+    static Matrix applyOperation(Matrix A, Matrix B, DoubleBinaryOperator operation) {
+        assertDimensionsEqual(A, B);
 
-    public static Matrix applyOperation(Matrix A, Matrix B, DoubleBinaryOperator operation) {
-        checkDimensionsEqual(A, B);
-
-        DoubleBuffer res = allocateDoubleBuffer(A.data.capacity());
+        DoubleBuffer res = allocateDoubleBuffer(A.size());
 
         for (int i = 0; i < res.capacity(); i++)
-            res.put(i, operation.applyAsDouble(A.data.get(i), B.data.get(i)));
+            res.put(i, operation.applyAsDouble(getBufferOf(A).get(i), getBufferOf(B).get(i)));
 
-        return new Matrix(res, A.rows, A.columns);
+        return MatrixFactory.matrix(res, A.rows(), A.columns());
     }
 
-    public static Matrix applyOperation(Matrix A, Matrix B, DoubleBinaryOperator operation, Matrix out) {
-        checkDimensionsEqual(A, B);
-        checkDimensionsEqual(A, out);
+    static Matrix applyOperation(Matrix A, Matrix B, DoubleBinaryOperator operation, Matrix out) {
+        assertDimensionsEqual(A, B);
+        assertDimensionsEqual(A, out);
 
-        for (int i = 0; i < out.data.capacity(); i++)
-            out.data.put(i, operation.applyAsDouble(A.data.get(i), B.data.get(i)));
+        for (int i = 0; i < A.size(); i++)
+            getBufferOf(out).put(i, operation.applyAsDouble(getBufferOf(A).get(i), getBufferOf(B).get(i)));
 
         return out;
     }
 
-    public static double applyOperationAndSum(Matrix A, Matrix B, DoubleBinaryOperator operation) {
-        checkDimensionsEqual(A, B);
+    static double applyOperationAndSum(Matrix A, Matrix B, DoubleBinaryOperator operation) {
+        assertDimensionsEqual(A, B);
 
-        double sum = 0;
+        double res = 0;
 
-        for (int i = 0; i < A.columns; i++)
-            sum += operation.applyAsDouble(A.data.get(i), B.data.get(i));
+        for (int i = 0; i < A.size(); i++)
+            res += operation.applyAsDouble(getBufferOf(A).get(i), getBufferOf(B).get(i));
 
-        return sum;
-    }
-
-    private static void checkDimensionsEqual(Matrix A, Matrix B) {
-        if (A.rows != B.rows || A.columns != B.columns)
-            throw new MatrixDimensionException("Dimension mismatch: <" + A.rows + ", " + A.columns + "> != <" + B.rows + ", " + B.columns + ">");
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return equals(obj, 0.01);
-    }
-
-    public boolean equals(Object obj, double tolerance) {
-        DoubleBuffer data;
-        if (obj instanceof Matrix) {
-            data = ((Matrix) obj).data;
-            checkDimensionsEqual(this, (Matrix) obj);
-        } else if (obj instanceof double[]) {
-            data = DoubleBuffer.allocate(((double[]) obj).length);
-            data.put((double[]) obj);
-        } else return false;
-
-        if (data.capacity() != columns * rows) return false;
-
-        if (tolerance == 0) return this.data.equals(data);
-
-        for (int i = 0; i < columns * rows; i++) {
-            if (Math.abs(this.data.get(i) - data.get(i)) > tolerance) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private String _toString() {
-        return "Matrix<" + rows + ", " + columns + ">";
-    }
-
-    @Override
-    public String toString() {
-        return toString(true);
-    }
-
-    public String toString(boolean printData) {
-        if (!printData) return _toString();
-        StringBuilder builder = new StringBuilder();
-        builder.append(_toString());
-        builder.append("[\n");
-        for (int i = 0; i < rows; i++) {
-            builder.append("    ");
-            for (int j = 0; j < columns; j++) {
-                builder.append("%.3f".formatted(at(i, j)));
-                builder.append("\t");
-            }
-            builder.append("\n");
-        }
-        builder.append("]");
-        return builder.toString();
-    }
-
-    private static DoubleBuffer allocateDoubleBuffer(int rows, int columns) {
-        return allocateDoubleBuffer(rows * columns);
-    }
-
-    private static DoubleBuffer allocateDoubleBuffer(int capacity) {
-        return ByteBuffer.allocateDirect(capacity * 8).order(ByteOrder.nativeOrder()).asDoubleBuffer();
-    }
-
-    private static native void transpose(DoubleBuffer out, DoubleBuffer X, int rows, int columns);
-
-    private static native void multiply(DoubleBuffer out, DoubleBuffer A, DoubleBuffer B, int rows, int columns, int innerDimension);
-
-    private static native void multiply(DoubleBuffer out, DoubleBuffer A, DoubleBuffer B, int rows, int columns);
-
-    private static native void multiply(DoubleBuffer out, DoubleBuffer X, double c, double rows, double columns);
-
-    static native void multiplyAndAdd(DoubleBuffer out, DoubleBuffer A, DoubleBuffer B, int rows, int columns, int innerDimension);
-
-    private static native void add(DoubleBuffer out, DoubleBuffer A, DoubleBuffer B, int rows, int columns);
-
-    private static native void add(DoubleBuffer out, DoubleBuffer X, double c, int rows, int columns);
-
-    private static native void subtract(DoubleBuffer out, DoubleBuffer A, DoubleBuffer B, int rows, int columns);
-
-    static {
-        System.loadLibrary("matrix");
+        return res;
     }
 }

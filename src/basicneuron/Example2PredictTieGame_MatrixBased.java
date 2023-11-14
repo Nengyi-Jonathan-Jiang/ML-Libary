@@ -2,6 +2,8 @@ package basicneuron;
 
 import chart.LineChart;
 import matrix.Matrix;
+import matrix.MatrixFactory;
+import matrix.RowVector;
 import neuralnet.Model;
 import neuralnet.layer.DenseLayer;
 import neuralnet.neuron.ActivationFunction;
@@ -17,7 +19,7 @@ public class Example2PredictTieGame_MatrixBased {
         double WR_eva = 0.5;
         double AG_eva = 3;
 
-        double __skill_difference = AG - AG_eva + 2 * (WR - WR_eva);// + Math.random() - 0.5;
+        double __skill_difference = AG - AG_eva + 0 * 2 * (WR - WR_eva);// + Math.random() - 0.5;
         double didHaveTie = Math.abs(__skill_difference) <= 2 ? 1 : 0;
         double didTeamScoreHigh = Math.max(AG * (WR_eva + 0.5) / 2, AG_eva * (WR + 0.5) / 2) >= 4 ? 1 : 0;
 
@@ -38,8 +40,8 @@ public class Example2PredictTieGame_MatrixBased {
             for(int j = 0; j < BATCH_SIZE; j++) {
                 double[] testCase = __generate_test_case();
 
-                Matrix inputs = Matrix.fromData(new double[][]{{1, testCase[0], testCase[1]}});
-                Matrix outputs = Matrix.fromData(new double[][]{{testCase[2], testCase[3]}});
+                RowVector inputs = MatrixFactory.rowVector(1, testCase[0], testCase[1]);
+                RowVector outputs = MatrixFactory.rowVector(testCase[2], testCase[3]);
                 Model.DataPoint dataPoint = new Model.DataPoint(inputs, outputs);
                 dataPoints[j] = dataPoint;
             }
