@@ -11,6 +11,7 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="native" targetName="test" />
       <config projectName="native" targetName="native" />
     </generated>
   </component>
@@ -21,7 +22,28 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="353b4348-deba-4da0-8c29-eb28be8dcbdf" name="Changes" comment="" />
+    <list default="true" id="353b4348-deba-4da0-8c29-eb28be8dcbdf" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../../chart/LineLogChart.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../test/Benchmarker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../basicneuron/Example1PredictGoalsScored.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../basicneuron/Example1PredictGoalsScored.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../basicneuron/Example1PredictGoalsScored_MatrixBased.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../basicneuron/Example1PredictGoalsScored_MatrixBased.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../basicneuron/Example2PredictTieGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../basicneuron/Example2PredictTieGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../basicneuron/Example2PredictTieGame_MatrixBased.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../basicneuron/Example2PredictTieGame_MatrixBased.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chart/LineChart.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../chart/LineChart.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Matrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Matrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MatrixOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/../MatrixOperations.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RowVectorImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RowVectorImplementation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/matrix.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/library.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/library.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/matrix.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/matrix.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/matrix.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/matrix.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../neuralnet/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../neuralnet/Model.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../neuralnet/layer/DenseLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../neuralnet/layer/DenseLayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../neuralnet/neuron/LossFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../neuralnet/neuron/LossFunction.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,7 +54,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -42,28 +64,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/Dan/Programming/Java/JavaML/Common/src/matrix/native",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "CMakeSettings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Dan/Programming/Java/JavaML/Common/src/matrix/native&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+}</component>
+  <component name="RunManager" selected="CMake Application.test">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="native" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="native" TARGET_NAME="native" CONFIG_NAME="Debug">
@@ -71,6 +93,27 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="test" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="native" TARGET_NAME="test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="native" RUN_TARGET_NAME="test">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test.cpp" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="native" TARGET_NAME="test.cpp" CONFIG_NAME="test.cpp">
+      <option name="sourceFile" value="src\test.cpp" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="C/C++ File.test.cpp" />
+      <item itemvalue="CMake Application.native" />
+      <item itemvalue="CMake Application.test" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="C/C++ File.test.cpp" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -86,6 +129,7 @@
       <workItem from="1699815870404" duration="878000" />
       <workItem from="1699848697778" duration="117000" />
       <workItem from="1699977563511" duration="3429000" />
+      <workItem from="1700004270562" duration="2372000" />
     </task>
     <servers />
   </component>

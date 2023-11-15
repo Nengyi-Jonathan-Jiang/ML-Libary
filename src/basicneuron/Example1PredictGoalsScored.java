@@ -1,6 +1,7 @@
 package basicneuron;
 
 import chart.LineChart;
+import chart.LineLogChart;
 import neuralnet.neuron.ActivationFunction;
 import neuralnet.neuron.Neuron;
 import neuralnet.util.ArrayUtil;
@@ -22,7 +23,8 @@ public class Example1PredictGoalsScored {
         neuron.getWeights()[1] = 1;
         neuron.getWeights()[2] = 1;
 
-        LineChart chart = new LineChart();
+        LineLogChart chart = new LineLogChart();
+        LineChart weightsChart = new LineChart();
 
         for (int i = 0; i < 10000; i++) {
             double[] gradient = new double[3];
@@ -47,13 +49,10 @@ public class Example1PredictGoalsScored {
 
             double avgLoss = totalLoss / BATCH_SIZE;
 
-            System.out.printf(
-                "Weights = %.3f    %.3f    %.3f,    loss = %.3f\n",
-                neuron.getWeights()[0], neuron.getWeights()[1], neuron.getWeights()[2],
-                avgLoss
-            );
-
-            chart.addPoint(i, avgLoss, "Normal");
+            chart.addPoint(i, avgLoss, "Normal", i % 100 == 0);
+            weightsChart.addPoint(i, neuron.getWeights()[0], "w1", i % 100 == 0);
+            weightsChart.addPoint(i, neuron.getWeights()[1], "w2", i % 100 == 0);
+            weightsChart.addPoint(i, neuron.getWeights()[2], "w3", i % 100 == 0);
 
             neuron.frobnicateWeights(tweaks);
         }

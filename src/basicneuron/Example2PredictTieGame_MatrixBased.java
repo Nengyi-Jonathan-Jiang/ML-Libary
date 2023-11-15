@@ -1,7 +1,6 @@
 package basicneuron;
 
-import chart.LineChart;
-import matrix.Matrix;
+import chart.LineLogChart;
 import matrix.MatrixFactory;
 import matrix.RowVector;
 import neuralnet.Model;
@@ -33,7 +32,7 @@ public class Example2PredictTieGame_MatrixBased {
         model.addLayer(new DenseLayer(3, 2, ActivationFunction.Sigmoid));
 //        model.addLayer(new DenseLayer(3, 2, ActivationFunction.Sigmoid));
 
-        LineChart chart = new LineChart();
+        LineLogChart chart = new LineLogChart();
 
         for (int i = 0; i < 10000; i++) {
             Model.DataPoint[] dataPoints = new Model.DataPoint[BATCH_SIZE];

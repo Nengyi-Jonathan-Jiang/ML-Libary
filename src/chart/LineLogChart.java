@@ -1,24 +1,24 @@
 package chart;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
+import org.jfree.chart.plot.PlotOrientation;
 
-public class LineChart extends ApplicationFrame {
+public class LineLogChart extends ApplicationFrame {
 
     private final CategoryTableXYDataset dataset;
 
-    public LineChart() {
+    public LineLogChart() {
         super("Chart");
 
         dataset = new CategoryTableXYDataset();
         JFreeChart lineChart = ChartFactory.createXYLineChart("Training data",
                 "Epoch",
-                "Weights",
+                "Log(Loss)",
                 dataset,
                 PlotOrientation.VERTICAL,
                 true,
@@ -40,6 +40,10 @@ public class LineChart extends ApplicationFrame {
     }
 
     public void addPoint(int epoch, double loss, String label, boolean update) {
-        dataset.add(epoch,loss, label, update);
+
+        if(loss < 1e-20) {
+            dataset.add(epoch, Double.NaN, label, update);
+        }
+        else dataset.add(epoch, Math.log(loss), label, update);
     }
 }

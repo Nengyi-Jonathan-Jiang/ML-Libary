@@ -21,3 +21,6 @@ set_target_properties(native PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURC
 # Add c++ standard libraries to dll
 set(CMAKE_SHARED_LINKER_FLAGS " -static")
 target_link_libraries(native -static-libgcc -static-libstdc++)
+
+# Create test.exe executable
+add_executable(test ${JEVM_SRC})

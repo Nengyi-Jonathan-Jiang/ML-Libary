@@ -79,7 +79,7 @@ public sealed interface Matrix permits DegenerateMatrix, MatrixBase, Vector {
         int totalElements = A.size();
 
         for (int i = 0; i < totalElements; i++)
-            getBufferOf(A).put(i, operation.applyAsDouble(getBufferOf(A).get(i)));
+            getBufferOf(out).put(i, operation.applyAsDouble(getBufferOf(A).get(i)));
 
         return out;
     }

@@ -29,6 +29,47 @@ public class Model {
         return train(new DataPoint(input, expected));
     }
 
+    public double train(Matrix input, Matrix output) {
+        // TODO: check dimensions
+
+        Matrix[] total_gradients_wrt_weights = new Matrix[getNumLayers()];
+        RowVector original_backpropagation_gradient = MatrixFactory.rowVector(output.columns());
+
+        for(int i = 0; i < getNumLayers(); i++) {
+            total_gradients_wrt_weights[i] = MatrixFactory.matrix(layers.get(i).getWeights());
+        }
+        double totalLoss = 0;
+
+//        System.out.println("New batch================");
+
+        int numDataPoints = input.rows();
+        for(int row = 0; row < numDataPoints; row++) {
+
+            // Feed data point into network
+            RowVector predicted = input.getRow(row);
+            for(Layer l : layers) {
+                l.acceptInput(predicted);
+                predicted = l.getOutputs();
+            }
+
+            // Get loss
+            double loss = lossFunction.apply(predicted, output.getRow(row));
+
+            totalLoss += loss;
+
+            RowVector backpropagation_gradient = lossFunction.applyGradient(predicted, output.getRow(row), original_backpropagation_gradient);
+            for(int i = getNumLayers() - 1; i >= 0; i--) {
+                backpropagation_gradient = layers.get(i).backpropagate(backpropagation_gradient, total_gradients_wrt_weights[i]);
+            }
+        }
+
+        for(int i = 0; i < getNumLayers(); i++) {
+            layers.get(i).updateWeights(total_gradients_wrt_weights[i].times(-learningRate / numDataPoints));
+        }
+
+        return totalLoss / numDataPoints;
+    }
+
     public double train(DataPoint data) {
         return train(new DataPoint[]{data});
     }
@@ -69,8 +110,7 @@ public class Model {
         }
 
         for(int i = 0; i < getNumLayers(); i++) {
-            Matrix gradient = total_gradients_wrt_weights[i].times(1. / numDataPoints);
-            layers.get(i).updateWeights(gradient.times(-learningRate));
+            layers.get(i).updateWeights(total_gradients_wrt_weights[i].times(-learningRate / numDataPoints));
         }
 
         return totalLoss / numDataPoints;

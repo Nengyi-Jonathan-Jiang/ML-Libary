@@ -17,40 +17,40 @@ public interface LossFunction {
         return applyGradient(predicted, expected, MatrixFactory.rowVector(predicted.size()));
     }
 
-    LossFunction MeanSquaredLoss = new LossFunction() {
-        @Override
-        public double apply(RowVector predicted, RowVector expected) {
-            RowVector residual = (RowVector) predicted.minus(expected);
-            double sumSquaredResiduals = residual.dot(residual);
-            return sumSquaredResiduals / residual.columns();
-        }
+    interface SumLossFunction extends LossFunction {
+        double loss(double predicted, double expected);
+        double derivative(double predicted, double expected);
 
         @Override
-        public RowVector applyGradient(RowVector predicted, RowVector expected, RowVector out) {
-            predicted.subtract_to(expected, out);
-            return (RowVector) out.multiply_to(2, out);
-        }
-    };
-
-    LossFunction LogLoss = new LossFunction() {
-        private double logLoss(double predicted, double expected) {
-            return expected == 0 ? -Math.log(predicted) : -Math.log(1 - predicted);
-        }
-
-        private double logLossDerivative(double predicted, double expected) {
-            return expected == 0 ? -1 / predicted : 1 / (1 - predicted);
-        }
-
-        @Override
-        public double apply(RowVector predicted, RowVector expected) {
-            double totalLoss = Matrix.applyOperationAndSum(predicted, expected, this::logLoss);
+        default double apply(RowVector predicted, RowVector expected) {
+            double totalLoss = Matrix.applyOperationAndSum(predicted, expected, this::loss);
             return totalLoss / predicted.columns();
         }
 
         @Override
-        public RowVector applyGradient(RowVector predicted, RowVector expected, RowVector out) {
-            Matrix.applyOperation(predicted, expected, this::logLossDerivative, out);
-            return (RowVector) out.times(1. / out.columns());
+        default RowVector applyGradient(RowVector predicted, RowVector expected, RowVector out) {
+            Matrix.applyOperation(predicted, expected, (predicted1, expected1) -> derivative(predicted1, expected1) / out.columns(), out);
+            return out;
+        }
+    }
+
+    LossFunction MeanSquaredLoss = new SumLossFunction() {
+        public double loss(double predicted, double expected) {
+            return (predicted - expected) * (predicted - expected) / 2;
+        }
+
+        public double derivative(double predicted, double expected) {
+            return predicted - expected;
+        }
+    };
+
+    LossFunction LogLoss = new SumLossFunction() {
+        public double loss(double predicted, double expected) {
+            return expected == 0 ? -Math.log(predicted) : -Math.log(1 - predicted);
+        }
+
+        public double derivative(double predicted, double expected) {
+            return expected == 0 ? -1 / predicted : 1 / (1 - predicted);
         }
     };
 }

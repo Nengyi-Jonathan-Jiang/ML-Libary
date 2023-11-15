@@ -1,6 +1,6 @@
 package basicneuron;
 
-import chart.LineChart;
+import chart.LineLogChart;
 import neuralnet.neuron.ActivationFunction;
 import neuralnet.neuron.Neuron;
 import neuralnet.util.ArrayUtil;
@@ -39,7 +39,7 @@ public class Example2PredictTieGame {
                n21 = new Neuron(3, ActivationFunction.Sigmoid),
                n22 = new Neuron(3, ActivationFunction.Sigmoid);
 
-        LineChart c = new LineChart();
+        LineLogChart c = new LineLogChart();
 
         for (int i = 0; i < 10000; i++) {
             double[] totalGradient21 = new double[3];

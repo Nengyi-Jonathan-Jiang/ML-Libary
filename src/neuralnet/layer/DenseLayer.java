@@ -54,7 +54,8 @@ public class DenseLayer extends Layer {
     public void acceptInput(RowVector input) {
         this.inputs = input;
         input.multiply_to(weights, weightedSums);
-        Matrix.applyOperation(weightedSums, activationFunction::apply, this.outputs);
+        Matrix.applyOperation(weightedSums, activationFunction::apply, outputs);
+//        System.out.println(input + " --> " + outputs);
     }
 
     @Override
@@ -64,7 +65,7 @@ public class DenseLayer extends Layer {
 
     @Override
     public void updateWeights(Matrix amount) {
-        weights = weights.plus(amount);
+        weights.sum_to(amount, weights);
     }
 
     /**

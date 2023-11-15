@@ -55,26 +55,4 @@ final class RowVectorImplementation extends VectorBase implements RowVector{
     public ColumnVector transpose() {
         return new ColumnVectorImplementation(buffer, size);
     }
-
-    @Override
-    public Matrix times(Matrix other) {
-        if(other instanceof RectangularMatrix) {
-            return multiply_to(other, new RowVectorImplementation(other.columns()));
-        }
-        else if(other instanceof ColumnVector) {
-            return new DegenerateMatrix(dot((Vector)other));
-        }
-        return null;
-    }
-
-    @Override
-    public Matrix multiply_to(Matrix other, Matrix out) {
-        if(other.rows() != size()) {
-            // TODO: elaborate
-            throw new MatrixDimensionException("");
-        }
-        assertDimensionsEqual(out, 1, other.columns());
-        MatrixOperations.multiply(getBufferOf(out), buffer, getBufferOf(other), 1, other.columns());
-        return out;
-    }
 }
