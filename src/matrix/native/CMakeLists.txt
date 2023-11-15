@@ -24,3 +24,7 @@ target_link_libraries(native -static-libgcc -static-libstdc++)
 
 # Create test.exe executable
 add_executable(test ${JEVM_SRC})
+set_target_properties(test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR} )
+
+set(CMAKE_EXE_LINKER_FLAGS  " -static")
+target_link_libraries(test -static-libgcc -static-libstdc++)

@@ -7,8 +7,20 @@ import java.util.Arrays;
 
 public class Benchmarker {
     @Test
+    public void benchmark_mat_mul_mini(){
+        benchmark_mat_mul(2, 10000000);
+    }
+
+    // RESULT: native outperforms java by up to 50% for 3x3 and above
+
+    @Test
+    public void benchmark_mat_mul_tiny(){
+        benchmark_mat_mul(3, 1000000);
+    }
+
+    @Test
     public void benchmark_mat_mul_small(){
-        benchmark_mat_mul(10, 100000);
+        benchmark_mat_mul(5, 100000);
     }
 
     @Test
@@ -40,6 +52,38 @@ public class Benchmarker {
             mat.multiply_to(mat, outMat);
 
             matmul(data, out, SIZE);
+        }
+    }
+
+    @Test
+    public void benchmark_mat_mul_java(){
+        int SIZE = 1000; int ITERATIONS = 1;
+        double[] data = new double[SIZE * SIZE];
+        double[] out = new double[SIZE * SIZE];
+        for(int n = 0; n < ITERATIONS; n++) {
+            for(int i = 0; i < SIZE; i++) {
+                for(int j = 0; j < SIZE; j++) {
+                    double value = MathUtil.randGaussian();
+                    data[i * SIZE + j] = value;
+                }
+            }
+            matmul(data, out, SIZE);
+        }
+    }
+
+    @Test
+    public void benchmark_mat_mul_native(){
+        int SIZE = 1000; int ITERATIONS = 1;
+        Matrix mat = MatrixFactory.matrix(SIZE, SIZE);
+        Matrix outMat = MatrixFactory.matrix(SIZE, SIZE);
+        for(int n = 0; n < ITERATIONS; n++) {
+            for(int i = 0; i < SIZE; i++) {
+                for(int j = 0; j < SIZE; j++) {
+                    double value = MathUtil.randGaussian();
+                    mat.setElementAt(i, j, value);
+                }
+            }
+            mat.multiply_to(mat, outMat);
         }
     }
 

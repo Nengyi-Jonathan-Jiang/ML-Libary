@@ -1,11 +1,16 @@
 #include "matrix.h"
 #include <iostream>
+#include <random>
 
 int main() {
     constexpr int SIZE = 700;
 
     auto* buf = new double[SIZE * SIZE];
     auto* outbuf = new double[SIZE * SIZE];
+
+    for(int i = 0; i < SIZE * SIZE; i++) {
+        buf[i] = rand() / 1000.;
+    }
 
     std::cout << "calculating...\n";
 

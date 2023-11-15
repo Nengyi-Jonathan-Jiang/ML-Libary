@@ -6,7 +6,7 @@ import neuralnet.neuron.Neuron;
 import neuralnet.util.ArrayUtil;
 
 public class Example2PredictTieGame {
-    private static final double LEARNING_RATE = 0.1, BATCH_SIZE = 1000;
+    private static final double LEARNING_RATE = 0.5, BATCH_SIZE = 1000;
 
     private static double[] __generate_test_case() {
 //        double WR = Math.random() * 0.6 + 0.2;
@@ -36,13 +36,13 @@ public class Example2PredictTieGame {
         final Neuron n11 = new Neuron(3, ActivationFunction.ReLU),
                n12 = new Neuron(3, ActivationFunction.ReLU),
                n13 = new Neuron(3, ActivationFunction.ReLU),
-               n21 = new Neuron(3, ActivationFunction.Sigmoid),
+               n21 = new Neuron(4, ActivationFunction.Sigmoid),
                n22 = new Neuron(3, ActivationFunction.Sigmoid);
 
         LineLogChart c = new LineLogChart();
 
         for (int i = 0; i < 10000; i++) {
-            double[] totalGradient21 = new double[3];
+            double[] totalGradient21 = new double[4];
             double[] totalGradient11 = new double[3];
             double[] totalGradient12 = new double[3];
             double[] totalGradient13 = new double[3];
@@ -56,7 +56,7 @@ public class Example2PredictTieGame {
                 n12.acceptInputs(inputs);
                 n13.acceptInputs(inputs);
 
-                double[] layer1Outputs = new double[]{n11.getOutput(), n12.getOutput(), n13.getOutput()};
+                double[] layer1Outputs = new double[]{1, n11.getOutput(), n12.getOutput(), n13.getOutput()};
 
                 n21.acceptInputs(layer1Outputs);
 
@@ -80,9 +80,9 @@ public class Example2PredictTieGame {
 
                 // Now we are ready to compute the gradients
                 double[] gradient_n21 = ArrayUtil.multiplyByConstant(d_output_weights_n21, loss_derivative);
-                double[] gradient_n11 = ArrayUtil.multiplyByConstant(d_output_weights_n11, backPropagation_n21[0]);
-                double[] gradient_n12 = ArrayUtil.multiplyByConstant(d_output_weights_n12, backPropagation_n21[1]);
-                double[] gradient_n13 = ArrayUtil.multiplyByConstant(d_output_weights_n13, backPropagation_n21[2]);
+                double[] gradient_n11 = ArrayUtil.multiplyByConstant(d_output_weights_n11, backPropagation_n21[1]);
+                double[] gradient_n12 = ArrayUtil.multiplyByConstant(d_output_weights_n12, backPropagation_n21[2]);
+                double[] gradient_n13 = ArrayUtil.multiplyByConstant(d_output_weights_n13, backPropagation_n21[3]);
 
                 totalGradient21 = ArrayUtil.sumElementwise(totalGradient21, gradient_n21);
                 totalGradient11 = ArrayUtil.sumElementwise(totalGradient11, gradient_n11);
@@ -90,10 +90,11 @@ public class Example2PredictTieGame {
                 totalGradient13 = ArrayUtil.sumElementwise(totalGradient13, gradient_n13);
             }
 
-            double[] tweaks_n21 = ArrayUtil.multiplyByConstant(totalGradient21, -LEARNING_RATE / BATCH_SIZE);
-            double[] tweaks_n11 = ArrayUtil.multiplyByConstant(totalGradient11, -LEARNING_RATE / BATCH_SIZE);
-            double[] tweaks_n12 = ArrayUtil.multiplyByConstant(totalGradient12, -LEARNING_RATE / BATCH_SIZE);
-            double[] tweaks_n13 = ArrayUtil.multiplyByConstant(totalGradient13, -LEARNING_RATE / BATCH_SIZE);
+            double lr = LEARNING_RATE * Math.exp(-i / 5000.);
+            double[] tweaks_n21 = ArrayUtil.multiplyByConstant(totalGradient21, -lr / BATCH_SIZE);
+            double[] tweaks_n11 = ArrayUtil.multiplyByConstant(totalGradient11, -lr / BATCH_SIZE);
+            double[] tweaks_n12 = ArrayUtil.multiplyByConstant(totalGradient12, -lr / BATCH_SIZE);
+            double[] tweaks_n13 = ArrayUtil.multiplyByConstant(totalGradient13, -lr / BATCH_SIZE);
 
             n21.frobnicateWeights(tweaks_n21);
             n11.frobnicateWeights(tweaks_n11);
