@@ -6,11 +6,11 @@ struct matrix {
 
     matrix(double* data, int M, int N) : data(data), M(M), N(N) { }
 
-    double& operator[](int x) const {
+    inline double& operator[](int x) const {
         return data[x];
     }
 
-    double& operator()(int i, int j) const {
+    inline double& operator()(int i, int j) const {
         return data[i * N + j];
     }
 
@@ -21,6 +21,8 @@ struct matrix {
     static void multiply(const matrix& out, const matrix& A, const matrix& B, int M, int N);
 
     static void multiply(const matrix& out, const matrix& X, double c, double M, double N);
+
+    static void multiplyAndAddOptimized(const matrix &out, const matrix &A, const matrix &B, int M, int N, int K);
 
     static void add(const matrix& out, const matrix& A, const matrix& B, int M, int N);
 

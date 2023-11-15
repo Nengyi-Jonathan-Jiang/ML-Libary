@@ -9,10 +9,13 @@ void matrix::transpose(const matrix &out, const matrix &X, int M, int N) {
 }
 
 void matrix::multiplyAndAdd(const matrix &out, const matrix &A, const matrix &B, int M, int N, int K) {
-    for(int i = 0; i < M; i++)
-        for(int k = 0; k < K; k++)
-            for(int j = 0; j < N; j++)
+    for (int i = 0; i < M; i++) {
+        for (int k = 0; k < K; k++) {
+            for (int j = 0; j < N; j++) {
                 out[i * N + j] += A[i * K + k] * B[k * N + j];
+            }
+        }
+    }
 }
 
 void matrix::multiply(const matrix &out, const matrix &A, const matrix &B, int M, int N, int K) {

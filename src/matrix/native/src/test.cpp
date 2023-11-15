@@ -3,23 +3,27 @@
 #include <random>
 
 int main() {
-    constexpr int SIZE = 700;
+    int SIZE = 1000;
+    int ITERATIONS = 10;
 
-    auto* buf = new double[SIZE * SIZE];
-    auto* outbuf = new double[SIZE * SIZE];
-
-    for(int i = 0; i < SIZE * SIZE; i++) {
-        buf[i] = rand() / 1000.;
-    }
-
-    std::cout << "calculating...\n";
-
+    auto *buf = new double[SIZE * SIZE];
+    auto *outbuf = new double[SIZE * SIZE];
     matrix m(buf, SIZE * SIZE, SIZE * SIZE);
     matrix out(outbuf, SIZE * SIZE, SIZE * SIZE);
 
-    matrix::multiply(out, m, m, SIZE, SIZE, SIZE);
+    std::cout << "calculating..." << std::endl;
 
-    std::cout << "done.\n";
+    for(int n = 0; n < ITERATIONS; n++) {
+        std::cout << "iteration " << n << ": initializing; " << std::flush;
+
+        for (int i = 0; i < SIZE * SIZE; i++) buf[i] = rand() / 1000.;
+
+        std::cout << "multiplying; " << std::endl;
+
+        matrix::multiply(out, m, m, SIZE, SIZE, SIZE);
+    }
+
+    std::cout << "done." << std::endl;
 
     delete[] buf;
     delete[] outbuf;

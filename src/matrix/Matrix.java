@@ -57,13 +57,6 @@ public sealed interface Matrix permits DegenerateMatrix, MatrixBase, Vector {
         return a.multiply_to(b, out);
     }
 
-
-
-
-
-
-
-
     static Matrix applyOperation(Matrix A, DoubleUnaryOperator operation) {
         DoubleBuffer res = allocateDoubleBuffer(getBufferOf(A).capacity());
 
